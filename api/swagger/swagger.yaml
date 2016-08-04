@@ -10,11 +10,11 @@ info:
 # TODO: chg sub domain
 #   api.juliye.com
 #   api-test.juliye.com
-host: wx-test.zlycare.com # localhost:10010 #
+host: localhost:8180 # api.juliye.com # localhost:10010 #
 
 # basePath prefixes all resource paths
 # TODO: version 1
-basePath: /1
+basePath: /3
 
 # The transfer protocol of the API.
 schemes:
@@ -37,86 +37,103 @@ produces:
 #================================================================================================================
 # The available paths and operations for the API
 paths:
-  /hello:
-    # binds a127 app logic to a route
-    x-swagger-router-controller: hello_world
+  /sessions/account:
+    x-swagger-router-controller: fake
     get:
-      description: Returns 'Hello' to the caller
-      # used as the method name of the controller
-      operationId: hello
+      description: 返回当前登陆的账户信息
+      operationId: NO_10003
       parameters:
-        - name: name
-          in: query
-          description: The name of the person to whom to say hello
-          required: false
-          type: string
+        - in: header
+          name: authorization
+          description: jwt
+          required: true
+          type: string      
       responses:
         "200":
-          description: Success
+          description: 账户信息
           schema:
-            # a pointer to a definition
-            $ref: "#/definitions/HelloWorldResponse"
-        # responses may fall through to errors
+            $ref: "#/definitions/AccountInfo"
         default:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /sessions/loginc:
+    x-swagger-router-controller: fake
+    post:
+      description: Login
+      operationId: NO_10001
+      parameters:
+        - in: body
+          name: body
+          description: 登陆信息
+          required: true
+          schema: 
+            $ref: "#/definitions/AuthInfo"
+      responses:
+        "200":
+          description: 登陆成功,返回User info and token
+          schema:
+            $ref: "#/definitions/AccountInfo"
+        default:
+          description: 登陆失败,返回Error info
+          schema:
+            $ref: "#/definitions/ErrorResponse"            
+  /sessions/logind:
+    x-swagger-router-controller: fake
+    post:
+      description: 医生账户登陆
+      operationId: NO_10002
+      parameters:
+        - in: body
+          name: body
+          description: 登陆信息
+          required: true
+          schema: 
+            $ref: "#/definitions/AuthInfo"
+      responses:
+        "200":
+          description: 登陆成功,返回User info and token
+          schema:
+            $ref: "#/definitions/AccountInfo"
+        default:
+          description: 登陆失败,返回Error info
+          schema:
+            $ref: "#/definitions/ErrorResponse"     
   /swagger:
     x-swagger-pipe: swagger_raw
-  /indexes/regions:
-    x-swagger-router-controller: Indexes
-    get:
-      description: 获取省市地区列表
-      operationId: getRegions
-      parameters:
-        - name: name
-          in: query
-          description: 地名 (模糊搜索)
-          required: false
-          type: string
-        - name: areaId
-          in: query
-          description: 地区ID
-          required: false
-          type: string
-      responses:
-        "200":
-          description: Success
-          schema:
-            $ref: "#/definitions/RegionEntity"
-        default:
-          description: Error
-          schema:
-            $ref: "#/definitions/ErrorResponse"
-
-
 #================================================================================================================
+# security
+# securityDefinitions:
+#   api_key:
+#     type: apiKey
+#     name: Authentication
+#     description: JWT(Json Web Token)
+#     in: header
 # complex objects have schema definitions
 definitions:
-  HelloWorldResponse:
+  AccountInfo:
     required:
-      - message
+      - username
+      - roles
     properties:
-      message:
+      username:
         type: string
-  RegionEntity:
+      roles:
+        type: array
+        items:
+          type: string
+  AuthInfo:
     required:
-      - _id
-      - name
-      - updatedAt
-      - createdAt
+      - username
+      - password
     properties:
-      _id:
+      username:
         type: string
-      name:
-        type: string
-      updatedAt:
-        type: string
-      createdAt:
+      password:
         type: string
   ErrorResponse:
     required:
-      - message
+      - info
     properties:
-      message:
+      info:
         type: string
