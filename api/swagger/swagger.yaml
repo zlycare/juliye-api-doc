@@ -10,7 +10,7 @@ info:
 # TODO: chg sub domain
 #   api.juliye.com
 #   api-test.juliye.com
-host: localhost:8180 # api.juliye.com # localhost:10010 #
+host: api.juliye.com # localhost:10010 #
 
 # basePath prefixes all resource paths
 # TODO: version 1
